@@ -1,0 +1,47 @@
+module.exports = {
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+        ecmaFeatures: {
+            jsx: true
+        },
+        useJSXTextNode: true,
+        project: './tsconfig.json',
+        tsconfigRootDir: './',
+        extraFileExtensions: [],
+    },
+    env: {
+        node: true,
+        mocha: true,
+    },
+    plugins: [
+        '@typescript-eslint',
+        'sonarjs',
+        'chai-expect',
+        'mocha',
+        'unicorn',
+        'import',
+    ],
+    extends: [
+        'eslint:recommended',
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:unicorn/recommended',
+        'plugin:sonarjs/recommended',
+        'plugin:import/errors',
+        'plugin:import/warnings',
+        'plugin:import/typescript',
+        'plugin:mocha/recommended',
+    ],
+    rules: {
+    },
+    overrides: [
+        {
+            "files": ["test/**/*.ts"],
+            "rules": {
+                'sonarjs/no-duplicate-string': 'off',
+                'sonarjs/cognitive-complexity': 'off',
+                'sonarjs/no-identical-functions': 'off',
+            },
+        },
+    ],
+};

@@ -1,0 +1,23 @@
+{
+    "diff": true,
+    "extension": [
+        "ts"
+    ],
+    "package": "./package.json",
+    "reporter": "spec",
+    "slow": 75,
+    "timeout": 2000,
+    "ui": "bdd",
+    "recursive": true,
+    "require": [
+        "./test/setup.js",
+        "choma"
+    ],
+    "spec": [
+        "./test/**"
+    ],
+    "watch-files": [
+        "src/**/*.ts",
+        "test/**/*.ts"
+    ]
+}
