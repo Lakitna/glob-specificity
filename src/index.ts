@@ -1,116 +1,149 @@
-/* global Omit */
-
-type Override<T1, T2> = Omit<T1, keyof T2> & T2;
-type Sortable<T> = Override<T, { specificity: GlobSpecificity }>;
-interface GlobSpecificity {
+/**
+ * Specificness of a glob pattern.
+ *
+ * Sorted from most important to least important.
+ * For each value: Higher is more specific.
+ */
+export type GlobSpecificity = [
     /**
-     * A Base3 segment mask where each number is a segment:
-     * - 0 = double star segment
-     * - 1 = single star segment
-     * - 2 = other segment
+     * A Base4 segment mask where each number is a segment:
+     * - 1 = double star segment
+     * - 2 = single star segment
+     * - 3 = other segment
      *
      * The mask is provided as a Base10 number.
-     *
-     * This is a positive integer where 0 = least specific.
      */
-    segmentMask: number;
+    segmentMask: number,
 
     /**
-     * Number of wildcards in Other segments
+     * Number of `*` wildcards in Other segments.
      */
-    wildcards: {
-        /**
-         * Number of `*` wildcards in Other segments.
-         *
-         * This is a positive integer where 0 = most specific.
-         */
-        star: number;
+    starWildcard: number,
 
-        /**
-         * Number of `?` wildcards in Other segments.
-         *
-         * This is a positive integer where 0 = most specific.
-         */
-        question: number;
-    }
-}
+    /**
+     * Number of `?` wildcards in Other segments.
+     */
+    questionWildcard: number,
+
+    /**
+     * `[chars]` matchers in Other segments.
+     */
+    charMatchWildcard: number,
+
+    /**
+     * `{a,b,...}` sub patterns in Other segments.
+     */
+    subPatternWildcard: number
+];
 
 /**
- * Returns a single specificness number for the given Glob pattern.
+ * Returns specificness for the given Glob pattern.
  *
  * Specificness takes into account (in order of importance):
- * - Amount of segments
+ * - Amount of segments as separated by `/`
  * - Segment type:
- *   - Double-star (`**`) wildcard segments
- *   - Single-star (`*`) wildcard segments
- *   - Other segments
- *     - `*` wildcards which are part of Other segments
- *     - `?` wildcards which are part of Other segments
+ *   - Double-star (`**`) wildcard segment
+ *   - Single-star (`*`) wildcard segment
+ *   - Other segment. Can contain
+ *     - `*` wildcard
+ *     - `?` wildcard
+ *     - `[char]` matches a single character in `chars`
+ *     - `{a,b,...}` matches any of the subpatterns `a`, `b`, etc.
+ *
+ * @example
+ * globSpecificity('foo/bar')
+ * // [15, 0, 0, 0, 0]
+ *
+ * @example
+ * globSpecificity('foo/b*r/b??')
+ * // [63, -1, -2, 0, 0]
  */
-export function globSpecificness(globPattern: string): GlobSpecificity {
-    const segmentSeparator = /[/\\]/g;
+export function globSpecificity(globPattern: string): GlobSpecificity {
+    const segmentSeparator = new RegExp('/', 'g');
 
-    const wildcardCount = {
-        star: 0,
-        question: 0,
-    };
+    let starCount: number = 0;
+    let questionCount: number = 0;
+    let charMatchCount: number = 0;
+    let subPatternCount: number = 0;
+
     const segmentMask = globPattern
         .split(segmentSeparator)
         .map((segment) => {
-            if (segment === '**') return 0; // double-star segment
-            if (segment === '*') return 1; // single-star segment
+            if (segment === '**') return 1; // double-star segment
+            if (segment === '*') return 2; // single-star segment
 
-            // other segment
-            wildcardCount.star += segment.split('*').length - 1;
-            wildcardCount.question += segment.split('?').length - 1;
-            return 2;
+            starCount -= segment.split('*').length - 1;
+            questionCount -= segment.split('?').length - 1;
+
+            const charMatches = segment.match(/\[.+?\]/g);
+            if (charMatches) {
+                // -2 to subtract the brackets `[` and `]`
+                // -1 because `[a]` is as specific as `a`
+                charMatchCount -= charMatches.reduce((prev, cur) => prev + cur.length - 3, 0);
+            }
+
+            const subPatternMatches = segment.match(/\{.+?\}/g);
+            if (subPatternMatches) {
+                // -1 because `{a}` is as specific as `a`
+                subPatternCount -= subPatternMatches.reduce(
+                    (prev, cur) => prev + cur.split(',').length - 1,
+                    0
+                );
+            }
+
+            return 3; // other segment
         })
         .reverse()
         .join('');
 
-    return {
-        segmentMask: parseInt(`1${segmentMask}`, 3) - 3,
-        wildcards: wildcardCount,
-    };
+    return [parseInt(segmentMask, 4), starCount, questionCount, charMatchCount, subPatternCount];
 }
 
 /**
- * Sort an array of glob patterns on
- * 1. Alphabet (standard string sort)
- * 2. Pattern specificness
- */
-export default function sortGlob(patterns: string[]): string[] {
-    const output = patterns
-        .sort() // alphabetical sort
-        .map((pattern) => {
-            return {
-                pattern: pattern,
-                specificity: globSpecificness(pattern),
-            };
-        });
-
-    return sortBySpecificity(output)
-        .map((v) => v.pattern as string);
-}
-
-/**
- * Sort on provided specificity.
+ * Sort an array of glob patterns by
  *
- * Note that this function does not calculate the specificity for you.
+ * 1. Specificity
+ * 2. Glob pattern, alphabetical. Ensures consistent sorting.
+ *
+ * Sorts from least specific to most specific.
+ *
+ * @example
+ * globSpecificitySort(['foo/bar', 'foo/*', 'foo/**'])
+ * // [ 'foo/**', 'foo/*', 'foo/bar' ]
+ *
+ * @example
+ * globSpecificitySort(['lorum/ipsum', 'foo/[bB]ar', 'hello/w?rld', 'amazing/*'])
+ * // [ 'amazing/*', 'hello/w?rld', 'foo/[bB]ar', 'lorum/ipsum' ]
  */
-export function sortBySpecificity<T extends Sortable<T>>(patterns: T[]): T[] {
-    return patterns.sort((a, b) => {
-        // Segment mask
-        if (a.specificity.segmentMask > b.specificity.segmentMask) return 1;
-        if (a.specificity.segmentMask < b.specificity.segmentMask) return -1;
+export function globSpecificitySort<G extends string>(globPatterns: G[]): G[] {
+    const output = globPatterns.map((pattern) => {
+        return {
+            glob: pattern,
+            specificity: globSpecificity(pattern),
+        };
+    });
 
-        // Other segment `*` wildcard
-        if (a.specificity.wildcards.star > b.specificity.wildcards.star) return -1;
-        if (a.specificity.wildcards.star < b.specificity.wildcards.star) return 1;
+    return sortByGlobSpecificity(output).map((v) => v.glob as G);
+}
 
-        // Other segment `?` wildcard
-        if (a.specificity.wildcards.question > b.specificity.wildcards.question) return -1;
-        if (a.specificity.wildcards.question < b.specificity.wildcards.question) return 1;
+/**
+ * Sort an array of glob specificity objects by
+ *
+ * 1. Specificity
+ * 2. Glob pattern, alphabetical. Ensures consistent sorting.
+ */
+export function sortByGlobSpecificity<T extends { glob: string; specificity: GlobSpecificity }>(
+    values: T[]
+): T[] {
+    return values.sort((a, b) => {
+        for (const i of a.specificity.keys()) {
+            if (a.specificity[i] > b.specificity[i]) return 1;
+            if (a.specificity[i] < b.specificity[i]) return -1;
+        }
+
+        // Same specificity. Sort alphabetically to ensure consistency
+        if (a.glob > b.glob) return 1;
+        if (a.glob < b.glob) return -1;
 
         return 0;
     });
