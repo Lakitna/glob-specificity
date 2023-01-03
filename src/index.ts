@@ -59,7 +59,7 @@ export type GlobSpecificity = [
  * // [63, -1, -2, 0, 0]
  */
 export function globSpecificity(globPattern: string): GlobSpecificity {
-    const segmentSeparator = new RegExp('/', 'g');
+    const segmentSeparator = /\//g;
 
     let starCount: number = 0;
     let questionCount: number = 0;
