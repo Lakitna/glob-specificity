@@ -9,7 +9,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "lib": [],
+    // "lib": [],
     // "allowJs": true,
     // "checkJs": true,
     // "jsx": "preserve",
