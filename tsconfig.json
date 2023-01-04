@@ -1,69 +1,62 @@
 {
-  "include": [
-    "src/**/*",
-    "test/**/*",
-  ],
-  "exclude": [
-    "node_modules",
-  ],
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    // "lib": [],
-    // "allowJs": true,
-    // "checkJs": true,
-    // "jsx": "preserve",
-    // "declaration": true,
-    // "declarationMap": true,
-    // "sourceMap": true,
-    // "outFile": "./",
-    // "outDir": "./dist",
-    // "rootDir": "./",
-    // "composite": true,
-    // "incremental": true,
-    // "tsBuildInfoFile": "./",
-    // "removeComments": true,
-    // "noEmit": true,
-    // "importHelpers": true,
-    // "downlevelIteration": true,
-    // "isolatedModules": true,
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        // "lib": [],
+        // "allowJs": true,
+        // "checkJs": true,
+        // "jsx": "preserve",
+        // "declaration": true,
+        // "declarationMap": true,
+        // "sourceMap": true,
+        // "outFile": "./",
+        // "outDir": "./dist",
+        // "rootDir": "./",
+        // "composite": true,
+        // "incremental": true,
+        // "tsBuildInfoFile": "./",
+        // "removeComments": true,
+        // "noEmit": true,
+        // "importHelpers": true,
+        // "downlevelIteration": true,
+        // "isolatedModules": true,
 
-    /* Strict Type-Checking Options */
-    "strict": true,
-    // "noImplicitAny": true,
-    // "suppressImplicitAnyIndexErrors": true,
-    // "strictNullChecks": true,
-    // "strictFunctionTypes": true,
-    // "strictBindCallApply": true,
-    // "strictPropertyInitialization": true,
-    // "noImplicitThis": true,
-    // "alwaysStrict": true,
+        /* Strict Type-Checking Options */
+        "strict": true,
+        // "noImplicitAny": true,
+        // "suppressImplicitAnyIndexErrors": true,
+        // "strictNullChecks": true,
+        // "strictFunctionTypes": true,
+        // "strictBindCallApply": true,
+        // "strictPropertyInitialization": true,
+        // "noImplicitThis": true,
+        // "alwaysStrict": true,
 
-    /* Additional Checks */
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noImplicitReturns": true,
-    // "noFallthroughCasesInSwitch": true,
+        /* Additional Checks */
+        // "noUnusedLocals": true,
+        // "noUnusedParameters": true,
+        // "noImplicitReturns": true,
+        // "noFallthroughCasesInSwitch": true,
 
-    /* Module Resolution Options */
-    "moduleResolution": "node",
-    // "baseUrl": "./",
-    // "paths": {},
-    // "rootDirs": [],
-    // "typeRoots": [],
-    // "types": [],
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    // "preserveSymlinks": true,
+        /* Module Resolution Options */
+        "moduleResolution": "node",
+        // "baseUrl": "./",
+        // "paths": {},
+        // "rootDirs": [],
+        // "typeRoots": [],
+        // "types": [],
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true
+        // "preserveSymlinks": true,
 
-    /* Source Map Options */
-    // "sourceRoot": "",
-    // "mapRoot": "",
-    // "inlineSourceMap": true,
-    // "inlineSources": true,
+        /* Source Map Options */
+        // "sourceRoot": "",
+        // "mapRoot": "",
+        // "inlineSourceMap": true,
+        // "inlineSources": true,
 
-    /* Experimental Options */
-    // "experimentalDecorators": true,
-    // "emitDecoratorMetadata": true,
-  }
+        /* Experimental Options */
+        // "experimentalDecorators": true,
+        // "emitDecoratorMetadata": true,
+    }
 }

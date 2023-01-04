@@ -61,10 +61,10 @@ export type GlobSpecificity = [
 export function globSpecificity(globPattern: string): GlobSpecificity {
     const segmentSeparator = /\//g;
 
-    let starCount: number = 0;
-    let questionCount: number = 0;
-    let charMatchCount: number = 0;
-    let subPatternCount: number = 0;
+    let starCount = 0;
+    let questionCount = 0;
+    let charMatchCount = 0;
+    let subPatternCount = 0;
 
     const segmentMask = globPattern
         .split(segmentSeparator)
@@ -75,18 +75,21 @@ export function globSpecificity(globPattern: string): GlobSpecificity {
             starCount -= segment.split('*').length - 1;
             questionCount -= segment.split('?').length - 1;
 
-            const charMatches = segment.match(/\[.+?\]/g);
+            const charMatches = segment.match(/\[.+?]/g);
             if (charMatches) {
                 // -2 to subtract the brackets `[` and `]`
                 // -1 because `[a]` is as specific as `a`
-                charMatchCount -= charMatches.reduce((prev, cur) => prev + cur.length - 3, 0);
+                charMatchCount -= charMatches.reduce(
+                    (previous, current) => previous + current.length - 3,
+                    0
+                );
             }
 
-            const subPatternMatches = segment.match(/\{.+?\}/g);
+            const subPatternMatches = segment.match(/{.+?}/g);
             if (subPatternMatches) {
                 // -1 because `{a}` is as specific as `a`
                 subPatternCount -= subPatternMatches.reduce(
-                    (prev, cur) => prev + cur.split(',').length - 1,
+                    (previous, current) => previous + current.split(',').length - 1,
                     0
                 );
             }
@@ -96,7 +99,13 @@ export function globSpecificity(globPattern: string): GlobSpecificity {
         .reverse()
         .join('');
 
-    return [parseInt(segmentMask, 4), starCount, questionCount, charMatchCount, subPatternCount];
+    return [
+        Number.parseInt(segmentMask, 4),
+        starCount,
+        questionCount,
+        charMatchCount,
+        subPatternCount,
+    ];
 }
 
 /**
@@ -136,9 +145,9 @@ export function sortByGlobSpecificity<T extends { glob: string; specificity: Glo
     values: T[]
 ): T[] {
     return values.sort((a, b) => {
-        for (const i of a.specificity.keys()) {
-            if (a.specificity[i] > b.specificity[i]) return 1;
-            if (a.specificity[i] < b.specificity[i]) return -1;
+        for (const index of a.specificity.keys()) {
+            if (a.specificity[index] > b.specificity[index]) return 1;
+            if (a.specificity[index] < b.specificity[index]) return -1;
         }
 
         // Same specificity. Sort alphabetically to ensure consistency

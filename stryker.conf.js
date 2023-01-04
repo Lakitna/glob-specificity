@@ -1,3 +1,5 @@
+/* eslint-disable unicorn/prevent-abbreviations */
+
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
 const config = {
     packageManager: 'npm',

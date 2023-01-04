@@ -1,4 +1,4 @@
-import pkg from './package.json' assert { type: 'json' };
+import package_ from './package.json' assert { type: 'json' };
 import typescript from 'rollup-plugin-typescript2';
 import dts from 'rollup-plugin-dts';
 import cleanup from 'rollup-plugin-cleanup';
@@ -11,14 +11,14 @@ export default [
         input: './src/index.ts',
         output: [
             {
-                file: pkg.module,
+                file: package_.module,
                 format: 'module',
             },
         ],
         plugins: [
             // Delete contents of target folder
             del({
-                targets: pkg.files,
+                targets: package_.files,
             }),
 
             // Compile source (typescript) to javascript
@@ -46,7 +46,7 @@ export default [
         input: './src/index.ts',
         output: [
             {
-                file: pkg.types,
+                file: package_.types,
                 format: 'module',
             },
         ],

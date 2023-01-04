@@ -9,5 +9,6 @@ use(sinonChai);
 use(chaiAsPromised);
 
 afterEach(() => {
+    // eslint-disable-next-line import/no-named-as-default-member
     sinon.restore();
 });
