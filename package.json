@@ -8,6 +8,13 @@
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lakitna/glob-specificity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Lakitna/glob-specificity/issues"
+  },
   "scripts": {
     "build": "rollup -c",
     "start": "npm run build -- -w",
