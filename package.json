@@ -1,6 +1,6 @@
 {
   "name": "glob-specificity",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "",
   "license": "MIT",
   "module": "dist/glob-specificity.mjs",
