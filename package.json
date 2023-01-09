@@ -19,7 +19,7 @@
     "prepublishOnly": "npm run lint && npm run test:ci && npm run build"
   },
   "author": {
-    "name": "Sander van Beek"
+    "name": "Lakitna"
   },
   "type": "module",
   "keywords": [],

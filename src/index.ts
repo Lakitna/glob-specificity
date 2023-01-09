@@ -18,7 +18,7 @@ export type GlobSpecificity = [
     segmentMask: number,
 
     /**
-     * Number of `*` wildcards in Other segments.
+     * Number of `*` wildcards that are part of Other segments.
      */
     starWildcard: number,
 
@@ -163,6 +163,7 @@ function countSegmentSubPattern(segment: string): number {
     }
     return count;
 }
+
 /**
  * Sort an array of glob patterns by
  *
@@ -195,6 +196,8 @@ export function globSpecificitySort<G extends string>(globPatterns: G[]): G[] {
  *
  * 1. Specificity
  * 2. Glob pattern, alphabetical. Ensures consistent sorting.
+ *
+ * Sorts from least specific to most specific.
  */
 export function sortByGlobSpecificity<T extends { glob: string; specificity: GlobSpecificity }>(
     values: T[]
