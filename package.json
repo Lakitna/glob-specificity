@@ -1,7 +1,7 @@
 {
   "name": "glob-specificity",
   "version": "0.1.0",
-  "description": "",
+  "description": "Define and sort by how specific a glob pattern is",
   "license": "MIT",
   "types": "./dist/glob-specificity.d.ts",
   "main": "./dist/glob-specificity.cjs",
@@ -12,13 +12,7 @@
   "files": [
     "dist"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Lakitna/glob-specificity.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Lakitna/glob-specificity/issues"
-  },
+  "type": "module",
   "scripts": {
     "build": "rollup -c",
     "start": "npm run build -- -w",
@@ -32,8 +26,19 @@
   "author": {
     "name": "Lakitna"
   },
-  "type": "module",
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lakitna/glob-specificity.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Lakitna/glob-specificity/issues"
+  },
+  "keywords": [
+    "glob",
+    "specificity",
+    "specific",
+    "sort"
+  ],
   "devDependencies": {
     "@stryker-mutator/core": "^6.3.1",
     "@stryker-mutator/mocha-runner": "^6.3.1",
