@@ -1,8 +1,8 @@
 # glob-specificity
 
-Define how specific a glob pattern is.
+Define and sort by how specific a glob pattern is.
 
-The specificness of a glob pattern can be very hard to define. This approach aims for 95% accuracy
+The specificness of a glob pattern can be very hard to define. This approach aims for ~90% accuracy
 and only supports the following glob features:
 
 | pattern     | description                                                                     |
@@ -25,7 +25,7 @@ npm install glob-specificity
 
 ## Getting started
 
-Sort an array of glob patterns by their specificty.
+Sort an array of glob patterns by their specificty. Will sort from least specific to most specific.
 
 ```typescript
 import { globSpecificitySort } from 'glob-specificity';
