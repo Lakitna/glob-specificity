@@ -3,8 +3,12 @@
   "version": "0.1.0",
   "description": "",
   "license": "MIT",
-  "module": "dist/glob-specificity.mjs",
-  "types": "dist/glob-specificity.d.ts",
+  "types": "./dist/glob-specificity.d.ts",
+  "main": "./dist/glob-specificity.cjs",
+  "exports": {
+    "import": "./dist/glob-specificity.mjs",
+    "require": "./dist/glob-specificity.cjs"
+  },
   "files": [
     "dist"
   ],

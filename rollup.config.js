@@ -11,8 +11,12 @@ export default [
         input: './src/index.ts',
         output: [
             {
-                file: package_.module,
+                file: package_.exports.import,
                 format: 'module',
+            },
+            {
+                file: package_.exports.require,
+                format: 'commonjs',
             },
         ],
         plugins: [
@@ -47,7 +51,6 @@ export default [
         output: [
             {
                 file: package_.types,
-                format: 'module',
             },
         ],
         plugins: [
