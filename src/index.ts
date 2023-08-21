@@ -6,7 +6,7 @@ import fill from 'fill-range';
  * Sorted from most important to least important.
  * For each value: Higher is more specific.
  */
-export type GlobSpecificity = [
+export class GlobSpecificity {
     /**
      * A Base3 segment mask where segments are represented as:
      * - globstar segment = ''
@@ -15,28 +15,66 @@ export type GlobSpecificity = [
      *
      * The mask is provided as a Base10 number.
      */
-    segmentMask: number,
+    segmentMask: number;
 
     /**
      * Number of `*` wildcards that are part of Other segments.
      */
-    starWildcard: number,
+    starWildcard: number;
 
     /**
      * Number of `?` wildcards in Other segments.
      */
-    questionWildcard: number,
+    questionWildcard: number;
 
     /**
      * `[chars]` matchers in Other segments.
      */
-    characterMatchWildcard: number,
+    characterMatchWildcard: number;
 
     /**
      * `{a,b,...}` sub patterns in Other segments.
      */
-    subPatternWildcard: number
-];
+    subPatternWildcard: number;
+
+    constructor(
+        segmentMask: number,
+        starWildcard: number,
+        questionWildcard: number,
+        characterMatchWildcard: number,
+        subPatternWildcard: number
+    ) {
+        this.segmentMask = segmentMask;
+        this.starWildcard = starWildcard;
+        this.questionWildcard = questionWildcard;
+        this.characterMatchWildcard = characterMatchWildcard;
+        this.subPatternWildcard = subPatternWildcard;
+    }
+
+    /**
+     * Compare to another instance.
+     *
+     * Returns 1 if this is more specific
+     * Returns 0 if equally specific
+     * Returns -1 if this is less specific
+     */
+    compareTo(other: GlobSpecificity): -1 | 0 | 1 {
+        // In order of importance (most to least)
+        const metrics = [
+            'segmentMask',
+            'starWildcard',
+            'questionWildcard',
+            'characterMatchWildcard',
+            'subPatternWildcard',
+        ] as const;
+
+        for (const metric of metrics) {
+            if (this[metric] > other[metric]) return 1;
+            if (this[metric] < other[metric]) return -1;
+        }
+        return 0;
+    }
+}
 
 /**
  * Returns specificness for the given Glob pattern.
@@ -54,11 +92,9 @@ export type GlobSpecificity = [
  *
  * @example
  * globSpecificity('foo/bar')
- * // [8, 0, 0, 0, 0]
  *
  * @example
  * globSpecificity('foo/b*r/b??')
- * // [26, -1, -2, 0, 0]
  */
 export function globSpecificity(globPattern: string): GlobSpecificity {
     const segments = globPattern.split(/\//g);
@@ -87,13 +123,13 @@ export function globSpecificity(globPattern: string): GlobSpecificity {
         segmentMask = '2' + segmentMask; // other segment
     }
 
-    return [
+    return new GlobSpecificity(
         segmentMask.length === 0 ? 0 : Number.parseInt(segmentMask, 3),
         starCount,
         questionCount,
         charMatchCount,
-        subPatternCount,
-    ];
+        subPatternCount
+    );
 }
 
 function countSegmentStar(segment: string): number {
@@ -203,9 +239,9 @@ export function sortByGlobSpecificity<T extends { glob: string; specificity: Glo
     values: T[]
 ): T[] {
     return values.sort((a, b) => {
-        for (const index of a.specificity.keys()) {
-            if (a.specificity[index] > b.specificity[index]) return 1;
-            if (a.specificity[index] < b.specificity[index]) return -1;
+        const comparison = a.specificity.compareTo(b.specificity);
+        if (comparison !== 0) {
+            return comparison;
         }
 
         // Same specificity. Sort alphabetically to ensure consistency and solve some edge cases
