@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { globSpecificity, globSpecificitySort } from '../../src';
+import { GlobSpecificity, globSpecificity, globSpecificitySort } from '../../src';
 
 describe('sortGlob', function () {
     it('sorts many things properly', function () {
@@ -122,32 +122,32 @@ describe('globSpecificness', function () {
     it('returns a Globspecificity object', function () {
         const result = globSpecificity('foo/b*r/b??');
 
-        expect(result).to.deep.equal([26, -1, -2, 0, 0]);
+        expect(result).to.deep.equal(new GlobSpecificity(26, -1, -2, 0, 0));
     });
 
     it('returns 0 for all but the segmentmask with a simple pattern', function () {
         const result = globSpecificity('foo');
 
-        expect(result).to.deep.equal([2, 0, 0, 0, 0]);
+        expect(result).to.deep.equal(new GlobSpecificity(2, 0, 0, 0, 0));
     });
 
     describe('Star wildcard', function () {
         it('returns -1 with a single star', function () {
             const result = globSpecificity('foo*');
 
-            expect(result).to.deep.equal([2, -1, 0, 0, 0]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, -1, 0, 0, 0));
         });
 
         it('returns -2 with two stars', function () {
             const result = globSpecificity('f*oo*');
 
-            expect(result).to.deep.equal([2, -2, 0, 0, 0]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, -2, 0, 0, 0));
         });
 
         it('returns 0 with an escaped single star', function () {
             const result = globSpecificity('foo\\*');
 
-            expect(result).to.deep.equal([2, 0, 0, 0, 0]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, 0, 0, 0));
         });
     });
 
@@ -155,19 +155,19 @@ describe('globSpecificness', function () {
         it('returns -1 with a single questionmark', function () {
             const result = globSpecificity('foo?');
 
-            expect(result).to.deep.equal([2, 0, -1, 0, 0]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, -1, 0, 0));
         });
 
         it('returns -2 with two questionmarks', function () {
             const result = globSpecificity('f?oo?');
 
-            expect(result).to.deep.equal([2, 0, -2, 0, 0]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, -2, 0, 0));
         });
 
         it('returns 0 with an escaped single questionmark', function () {
             const result = globSpecificity('foo\\?');
 
-            expect(result).to.deep.equal([2, 0, 0, 0, 0]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, 0, 0, 0));
         });
     });
 
@@ -175,25 +175,25 @@ describe('globSpecificness', function () {
         it('returns -1 with a single wildcard', function () {
             const result = globSpecificity('[Ff]oo');
 
-            expect(result).to.deep.equal([2, 0, 0, -1, 0]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, 0, -1, 0));
         });
 
         it('returns -2 with a single three-char wildcard', function () {
             const result = globSpecificity('[Ffv]oo');
 
-            expect(result).to.deep.equal([2, 0, 0, -2, 0]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, 0, -2, 0));
         });
 
         it('returns -2 with two wildcards', function () {
             const result = globSpecificity('[Ff]o[Oo]');
 
-            expect(result).to.deep.equal([2, 0, 0, -2, 0]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, 0, -2, 0));
         });
 
         it('returns 0 with an escaped opening bracket', function () {
             const result = globSpecificity('\\[Ff]oo');
 
-            expect(result).to.deep.equal([2, 0, 0, 0, 0]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, 0, 0, 0));
         });
     });
 
@@ -201,25 +201,87 @@ describe('globSpecificness', function () {
         it('returns -1 with a single wildcard', function () {
             const result = globSpecificity('{Foo,foo}');
 
-            expect(result).to.deep.equal([2, 0, 0, 0, -1]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, 0, 0, -1));
         });
 
         it('returns -2 with a single three-pattern wildcard', function () {
             const result = globSpecificity('{Foo,foo}{Foo,foo}');
 
-            expect(result).to.deep.equal([2, 0, 0, 0, -2]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, 0, 0, -2));
         });
 
         it('returns -2 with two wildcards', function () {
             const result = globSpecificity('{Foo,foo,bar}');
 
-            expect(result).to.deep.equal([2, 0, 0, 0, -2]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, 0, 0, -2));
         });
 
         it('returns 0 with an escaped opening brace', function () {
             const result = globSpecificity('\\{Foo,foo}');
 
-            expect(result).to.deep.equal([2, 0, 0, 0, 0]);
+            expect(result).to.deep.equal(new GlobSpecificity(2, 0, 0, 0, 0));
+        });
+    });
+
+    describe('compareTo', function () {
+        it('returns 1 when B is less specific', function () {
+            for (let index = 0; index < 5; index++) {
+                const input: [number, number, number, number, number] = [
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                ];
+
+                const a = new GlobSpecificity(...input);
+
+                input[index] -= 1;
+                const b = new GlobSpecificity(...input);
+
+                expect(a.compareTo(b)).to.equal(1);
+            }
+        });
+
+        it('returns 0 when B is as specific', function () {
+            for (let index = 0; index < 5; index++) {
+                const input: [number, number, number, number, number] = [
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                ];
+
+                const a = new GlobSpecificity(...input);
+                const b = new GlobSpecificity(...input);
+
+                expect(a.compareTo(b)).to.equal(0);
+            }
+        });
+
+        it('returns -1 when B is more specific', function () {
+            for (let index = 0; index < 5; index++) {
+                const input: [number, number, number, number, number] = [
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                    randomInt(-100, 100),
+                ];
+
+                const a = new GlobSpecificity(...input);
+
+                input[index] += 1;
+                const b = new GlobSpecificity(...input);
+
+                expect(a.compareTo(b)).to.equal(-1);
+            }
         });
     });
 });
+
+function randomInt(min: number, max: number) {
+    const range = max - min;
+    return Math.round(Math.random() * range) + min;
+}
