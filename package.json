@@ -1,6 +1,6 @@
 {
   "name": "glob-specificity",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Define and sort by how specific a glob pattern is",
   "license": "MIT",
   "types": "./dist/glob-specificity.d.ts",
