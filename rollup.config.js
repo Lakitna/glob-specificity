@@ -1,4 +1,4 @@
-import package_ from './package.json' assert { type: 'json' };
+import package_ from './package.json' with { type: 'json' };
 import typescript from 'rollup-plugin-typescript2';
 import dts from 'rollup-plugin-dts';
 import cleanup from 'rollup-plugin-cleanup';
