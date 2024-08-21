@@ -1,13 +1,14 @@
 {
   "name": "glob-specificity",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Define and sort by how specific a glob pattern is",
   "license": "MIT",
   "types": "./dist/glob-specificity.d.ts",
   "main": "./dist/glob-specificity.cjs",
   "exports": {
     "import": "./dist/glob-specificity.mjs",
-    "require": "./dist/glob-specificity.cjs"
+    "require": "./dist/glob-specificity.cjs",
+    "types": "./dist/glob-specificity.d.ts"
   },
   "files": [
     "dist"
